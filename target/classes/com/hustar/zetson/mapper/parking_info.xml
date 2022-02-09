@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+	 
+	<mapper namespace="com.hustar.zetson.dao.parking_infoDAO">
+	    
+	    <select id="getCarInfo" resultType="com.hustar.zetson.domain.car_infoVO">
+	        SELECT *,
+				(CASE WHEN aval = 1 THEN '주차중'
+        		ELSE '출차완료'
+    			END) AS state
+	        FROM parkin_info
+	        WHERE idx = #{idx}
+	    </select>
+	    
+	    <select id="searchCarInfo" resultType="com.hustar.zetson.domain.car_infoVO">
+	        SELECT *,
+				(CASE WHEN aval = 1 THEN '주차중'
+        		ELSE '출차완료'
+    			END) AS state
+	        FROM parkin_info
+	        WHERE car_num = #{car_num} AND aval = 1
+	    </select>
+	    
+		<select id="getCarList" resultType="com.hustar.zetson.domain.car_infoVO">
+			SELECT  idx, car_num, ent_date, img_name, exit_time, aval,
+				(CASE WHEN aval = 1 THEN '주차중'
+        		ELSE '출차완료'
+    			END) AS state
+    		FROM parkin_info
+		</select>
+		
+		<select id="getParkingInfo" resultType="com.hustar.zetson.domain.parking_infoVO">
+			SELECT count(*) AS current_car,
+				(SELECT count(*)
+    			FROM parkin_info
+    			WHERE ent_date like '%2021-09-26%') AS toDay_car
+    		FROM parkin_info
+		</select>
+		
+	    <select id="getRecentlyCar" resultType="String">
+			SELECT img_name
+			FROM parkin_info
+			WHERE ent_date = (	SELECT MAX(ent_date)
+								FROM parkin_info)
+		</select>
+
+	</mapper>
